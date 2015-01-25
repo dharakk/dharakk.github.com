@@ -1,24 +1,25 @@
 ---
 layout: post
-title: Introducing Poole
+title: Implementation of Shell using C
 ---
 
-*The Strange Case of Dr. Jekyll and Mr. Hyde* tells the story of a lawyer investigating the connection of two persons, Dr. Henry Jekyll and Mr. Edward Hyde. Chief among the novel's supporting cast is a man by the name of Mr. Poole, Dr. Jekyll's loyal butler.
+*Writing your own bash* is as exciting as it sounds! When the prompt of your design answers to your commands like a clockwork, the feeling is something  else. So, I will describe briefly how I did it. 
 
 -----
 
-Poole is the butler for [Jekyll](http://jekyllrb.com), the static site generator. It's designed and developed by [@mdo](https://twitter.com/mdo) to provide a clear and concise foundational setup for any Jekyll site. It does so by furnishing a full vanilla Jekyll install with example templates, pages, posts, and styles.
+You can read about the the system calls used in [The GNU C library](http://www.gnu.org/software/libc/manual/html_node/index.html). Before diving in you might want to look at [Input/Output Overview](http://www.gnu.org/software/libc/manual/html_node/index.html#toc-Input_002fOutput-Overview) and [Pipes and FIFO](http://www.gnu.org/software/libc/manual/html_node/index.html#toc-Pipes-and-FIFOs-1).
 
-There are currently two themes built on Poole:
+These are the system calls we will be using:
 
-* [Hyde](http://hyde.getpoole.com)
-* [Lanyon](http://lanyon.getpoole.com)
+* fork()
+* execvp()
+* pipe()
+* dup2()
+* wait()
 
-Learn more and contribute on [GitHub](https://github.com/poole).
+In addition to these, there will be a basic parsing mechanism.
 
-### What's included
-
-Poole is a streamlined Jekyll site designed and built as a foundation for building more meaningful themes. Poole, and every theme built on it, includes the following:
+### External commands execution:
 
 * Complete Jekyll setup included (layouts, config, [404](/404.html), [RSS feed](/atom.xml), posts, and [example page](/about))
 * Mobile friendly design and development
