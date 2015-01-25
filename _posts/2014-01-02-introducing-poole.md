@@ -21,21 +21,56 @@ In addition to these, there will be a basic parsing mechanism.
 
 ### External commands execution:
 
-* Complete Jekyll setup included (layouts, config, [404](/404.html), [RSS feed](/atom.xml), posts, and [example page](/about))
-* Mobile friendly design and development
-* Easily scalable text and component sizing with `rem` units in the CSS
-* Support for a wide gamut of HTML elements
-* Related posts (time-based, because Jekyll) below each post
-* Syntax highlighting, courtesy Pygments (the Python-based code snippet highlighter)
+* What 'execvp()' syscall does is, it replaces the current process image with another process. We will use this and the external binary files to execute all external commands.
+* We first parse the user input, clean them of extra white spaces and extract command and the parameters.
+* Now we will fork a process and within this child process call 'execvp()' and supply the binary location of the required command and the parameters
+* 'execvp()' will replace the child image will that of the command being executed.
+* Other than execvp() any other flavour of 'exec()' can be used. Read more about 'exec()' [here](http://pubs.opengroup.org/onlinepubs/009695399/functions/exec.html).
 
-Additional features are available in individual themes.
+So,the most easy part of shell is done.
 
-### Browser support
+### I/O redirection
 
-Poole and it's themes are by preference a forward-thinking project. In addition to the latest versions of Chrome, Safari (mobile and desktop), and Firefox, it is only compatible with Internet Explorer 9 and above.
+* 'dup2()' system call will come in handy for this purpose. Basically dup2(int new,int old) duplicates the 'old' descriptor into 'new'.
+* Now the job is simple, we open a file and get the file descriptor and depending upon we want input / output redirection, we duplicate stdin/stdout into the file descriptor.
 
-### Download
+The code would look like this: 
 
-Poole is developed on and hosted with GitHub. Head to the <a href="https://github.com/poole/poole">GitHub repository</a> for downloads, bug reports, and features requests.
+{% highlight cpp %}
+
+int fdi=open(arglist2[0],O_RDONLY);
+dup2(fdi,0);
+
+{% endhighlight %}
+
+
+### Pipeline
+
+For a command pipeline, create a pipe using 'pipe()' system call and duplicate the file descriptors of pipe to stdin/stdout. yes, that simple! For more than one level of pipeline just carefully crafted sequence of 'pipe()' and 'dup2()' command will be required. Do not forget ot close the unused end of the pipe in both the process, this can be a real deal-breaker.
+
+### A little extra
+
+* You can implement internal commands like 'cd' od 'pwd' using 'chdir()' and 'getcwd()' syscalls.
+* Basic history command or bang operator can be implemented by just maintaining a history file and modfying the parsing function a little.
+* Detect & in the input and do not call 'wait()' for the parent process, this way the child will go into background.
+
+My version of implementation can be found [here](https://github.com/dharakk/nutsh).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 Thanks!
